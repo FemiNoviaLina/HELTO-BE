@@ -12,9 +12,13 @@
   "dependencies": {
     "@prisma/client": "^3.11.1",
     "@vercel/node": "^1.14.0",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.0",
     "fastify": "^3.27.4",
+    "fastify-cors": "^6.0.3",
     "jsonwebtoken": "^8.5.1",
-    "prisma": "^3.11.1"
-  }
+    "prisma": "^3.11.1",
+    "validator": "^13.7.0"
+  },
+  "type": "module"
 }
