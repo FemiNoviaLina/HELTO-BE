@@ -1,8 +1,8 @@
 import { fastify } from 'fastify'
 import Prisma from '@prisma/client'
 import 'dotenv/config'
-import authRoute from './routes/auth.js'
 import fastifyCors from 'fastify-cors'
+import route from './routes/index.js'
 
 const { PrismaClient } = Prisma;
 export const prisma = new PrismaClient()
@@ -10,8 +10,7 @@ export const prisma = new PrismaClient()
 const server = fastify({ logger: true })
 
 server.register(fastifyCors)
-
-server.register(authRoute)
+server.register(route)
 
 const start = async () => {
   await prisma.$connect().then(() => {

@@ -2,9 +2,11 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../index.js'
 import { errorResponse, successResponse } from '../helpers/base_response.js'
 import jwt from 'jsonwebtoken'
+import getUsername from '../helpers/string_util.js'
 
 const registerUser = async (req, res) => {
-    const { name, username, email, phone, region, password } = req.body
+    const { name, email, phone, region, password } = req.body
+    const username = getUsername(email)
     let user
 
     try {
@@ -15,12 +17,10 @@ const registerUser = async (req, res) => {
         })
     } catch (e) {
         console.log(e)
-        return res.status(400).send(errorResponse('email already registered'))
+        return res.status(400).send(errorResponse(e.message))
     }
 
-    const payload = {
-        email
-    }
+    const payload = { id: user.id, email }
 
     const token = jwt.sign(payload, process.env.JWT_SECRET)
 
@@ -49,9 +49,7 @@ const getToken = async (req, res) => {
         return res.status(400).send(errorResponse('Invalid email or password'))
     }
 
-    const payload = {
-        email
-    }
+    const payload = { id: user.id, email }
 
     const token = jwt.sign(payload, process.env.JWT_SECRET)
 

@@ -6,6 +6,13 @@ const successResponse = (data, message) => {
     }
 }
 
+const successResponseNoData = (message) => {
+    return {
+        status: 'success',
+        message
+    }
+}
+
 const errorResponse = (message) => {
     return {
         status: 'error',
@@ -13,4 +20,4 @@ const errorResponse = (message) => {
     }
 }
 
-export { successResponse, errorResponse }
+export { successResponse, errorResponse, successResponseNoData }

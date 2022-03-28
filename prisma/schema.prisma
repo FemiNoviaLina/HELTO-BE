@@ -70,14 +70,6 @@ model News {
   UpdatedAt    DateTime @updatedAt
 }
 
-model Disease {
-  id           Int      @id @default(autoincrement())
-  name         String   @db.VarChar(255)
-  description  String   @db.Text
-  createdAt    DateTime @default(now())
-  UpdatedAt    DateTime @updatedAt
-}
-
 model Feedback {
   id           Int      @id @default(autoincrement())
   name         String   @db.VarChar(255)
