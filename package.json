@@ -4,14 +4,17 @@
   "description": "Backend for HelTo web application.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "FemiNoviaLina",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^3.11.1",
+    "@vercel/node": "^1.14.0",
     "dotenv": "^16.0.0",
     "fastify": "^3.27.4",
+    "jsonwebtoken": "^8.5.1",
     "prisma": "^3.11.1"
   }
 }
