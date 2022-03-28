@@ -3,13 +3,30 @@ import Prisma from '@prisma/client'
 import 'dotenv/config'
 import fastifyCors from 'fastify-cors'
 import route from './routes/index.js'
+import Ajv from 'ajv'
+import ajvErrors from 'ajv-errors'
+import addFormats from 'ajv-formats'
 
 const { PrismaClient } = Prisma;
 export const prisma = new PrismaClient()
 
-const server = fastify({ logger: true })
+const ajv = new Ajv({ 
+  allErrors: true, 
+  removeAdditional: true, 
+  useDefaults: true, 
+  coerceTypes: true,
+  unicodeRegExp: false
+})
+
+ajvErrors(ajv)
+addFormats(ajv)
+
+const server = fastify({ 
+  logger: true,
+})
 
 server.register(fastifyCors)
+server.setValidatorCompiler(({ schema }) => { return ajv.compile(schema) })
 server.register(route)
 
 const start = async () => {

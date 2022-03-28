@@ -1,3 +1,3 @@
-export default getUsername = email =>{
+export const getUsername = email => {
     return email.split('@')[0]
 }

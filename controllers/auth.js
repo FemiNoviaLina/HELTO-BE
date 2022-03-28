@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../index.js'
 import { errorResponse, successResponse } from '../helpers/base_response.js'
 import jwt from 'jsonwebtoken'
-import getUsername from '../helpers/string_util.js'
+import { getUsername } from '../helpers/string_util.js'
 
 const registerUser = async (req, res) => {
     const { name, email, phone, region, password } = req.body
@@ -24,7 +24,6 @@ const registerUser = async (req, res) => {
 
     const token = jwt.sign(payload, process.env.JWT_SECRET)
 
-    console.log(user)
     return res.status(200).send(successResponse({ user: {
         id : user.id, name, username, email, phone, region
     }, token }, 'User registered successfully'))
