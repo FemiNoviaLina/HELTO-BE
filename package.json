@@ -4,9 +4,8 @@
   "description": "Backend for HelTo web application.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "prisma generate"
+    "start": "node index.js && prisma generate && prisma migrate deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "FemiNoviaLina",
   "license": "ISC",
