@@ -1,23 +1,4 @@
-const successResponse = (data, message) => {
-    return {
-        status: 'success',
-        data,
-        message
-    }
+export const responseBody = (code, message, data = '') => {
+    if(!data) return { code, message}
+    return { code, message, data }
 }
-
-const successResponseNoData = (message) => {
-    return {
-        status: 'success',
-        message
-    }
-}
-
-const errorResponse = (message) => {
-    return {
-        status: 'error',
-        message
-    }
-}
-
-export { successResponse, errorResponse, successResponseNoData }

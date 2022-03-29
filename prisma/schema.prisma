@@ -21,6 +21,7 @@ model User {
   isAdmin       Boolean     @db.Boolean @default(false)
   posts         Post[]   
   likes         PostLikes[]
+  authorOf      News[]
   createdAt     DateTime    @default(now())
   UpdatedAt     DateTime    @updatedAt
 }
@@ -65,7 +66,9 @@ model News {
   id           Int      @id @default(autoincrement())
   title        String   @db.VarChar(255)
   content      String   @db.Text
-  author       String   @db.VarChar(255)
+  author       User     @relation(fields: [authorId], references: [id])
+  authorId     Int
+  image        String   @db.VarChar(255)
   createdAt    DateTime @default(now())
   UpdatedAt    DateTime @updatedAt
 }
@@ -77,4 +80,20 @@ model Feedback {
   feedback     String   @db.Text
   createdAt    DateTime @default(now())
   UpdatedAt    DateTime @updatedAt
+}
+
+model Agenda {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  date         DateTime @db.Date
+  createdAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+}
+
+model Media {
+  id          Int      @id @default(autoincrement())
+  link        String   @db.VarChar(255)
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
