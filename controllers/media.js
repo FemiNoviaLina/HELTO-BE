@@ -7,7 +7,7 @@ const getMedia = async (req, res) => {
     const take = req.query.limit ? parseInt(req.query.limit) : 10
 
     const media = await prisma.media.findMany({
-        orderBy: { createdAt: "desc"}, skip, take
+        orderBy: { createdAt: "desc" }, skip, take
     })
 
     if(media.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada media untuk ditampilkan'))

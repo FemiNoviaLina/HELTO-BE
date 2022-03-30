@@ -12,4 +12,9 @@ const getKey = (length = 5) => {
    return result;
 }
 
-export { getUsername, getKey }
+const toDate = date => {
+    const [day, month, year] = date.split("-")
+    return new Date(year, month - 1, parseInt(day) + 1).toISOString().toLocaleString('zh-TW')
+}
+
+export { getUsername, getKey, toDate }
