@@ -41,19 +41,22 @@ const getToken = async (req, res) => {
                 email
             }
         })
-    } catch (e) {
+    }
+    catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
 
-    if(!user) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'Invalid email atau password'))
+    if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'Email atau password invalid'))
 
-    if (!bcrypt.compare(password, user.password)) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'Invalid email atau password'))
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if(!isMatch) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'Email atau password invalid'))
 
     const payload = { id: user.id, email, isAdmin: user.isAdmin }
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET)
+    const token = await jwt.sign(payload, process.env.JWT_SECRET)
 
-    return res.status(200).send(responseBody(statusCode.OK.constant, 'User logged in successfully', { 
+    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Token berhasil didapat', {
         user: { id : user.id, name: user.name, username: user.username, email: user.email, phone: user.phone, region: user.region }, token 
     }))
 }
