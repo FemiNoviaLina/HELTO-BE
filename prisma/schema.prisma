@@ -19,6 +19,9 @@ model User {
   region        String?     @db.VarChar(255)
   password      String      @db.VarChar(255)
   isAdmin       Boolean     @db.Boolean @default(false)
+  thread        Thread?     @relation(fields: [threadId], references: [id])
+  threadId      Int?     
+  joined        Boolean     @default(false)
   posts         Post[]   
   likes         PostLikes[]
   authorOf      News[]
@@ -27,10 +30,13 @@ model User {
 }
 
 model Thread {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(255)
-  key        String   @unique @db.VarChar(255)
-  posts      Post[]
+  id            Int      @id @default(autoincrement())
+  key           String   @unique @db.VarChar(255)
+  posts         Post[]
+  member        User[]  
+  memberCounts  Int       @default(0) 
+  createdAt     DateTime  @default(now())
+  UpdatedAt     DateTime  @updatedAt
 }
 
 model Post {
@@ -94,6 +100,15 @@ model Media {
   id          Int      @id @default(autoincrement())
   link        String   @db.VarChar(255)
   description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TipsTrick {
+  id          Int      @id @default(autoincrement())
+  image       String   @db.VarChar(255)
+  title       String   @db.VarChar(255)
+  content     String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
