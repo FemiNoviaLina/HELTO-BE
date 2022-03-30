@@ -11,7 +11,6 @@ export const validateToken = async (req, res, done) => {
 
     const token = auth.split(' ')[1]
 
-    console.log(token)
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if(err) {
             console.log(err)

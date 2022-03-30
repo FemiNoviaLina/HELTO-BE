@@ -13,18 +13,18 @@ export default async (fastify, opts) => {
 }
 
 const privateNewsRoute = async fastify => {
-    fastify.post('/news', {
-        preHandler: fastify.auth([validateToken]),
-        preValidation: upload.fields([{ name: 'image', maxCount: 1 }]),
-        schema: postNewsSchema,
-        handler: postNews
-    })
-
     fastify.put('/news/:id', {
         preHandler: fastify.auth([validateToken]),
         preValidation: upload.fields([{ name: 'image', maxCount: 1 }]),
         schema: updateNewsSchema,
         handler: updateNews
+    })
+    
+    fastify.post('/news', {
+        preHandler: fastify.auth([validateToken]),
+        preValidation: upload.fields([{ name: 'image', maxCount: 1 }]),
+        schema: postNewsSchema,
+        handler: postNews
     })
 
     fastify.delete('/news/:id', {

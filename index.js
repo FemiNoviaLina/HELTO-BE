@@ -7,10 +7,7 @@ import Ajv from 'ajv'
 import ajvErrors from 'ajv-errors'
 import addFormats from 'ajv-formats'
 import multer from 'fastify-multer'
-import fastifyStatic from 'fastify-static'
-import path from 'path'
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js'
 
 const { PrismaClient } = Prisma;
 export const prisma = new PrismaClient()
@@ -26,25 +23,14 @@ const ajv = new Ajv({
 ajvErrors(ajv)
 addFormats(ajv)
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'public'))
-  },
-  filename: (req, file, cb) =>  {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-})
-export const upload = multer({ storage })
+export const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
+export const upload = multer()
 
 const server = fastify({ 
   logger: true,
 })
 
 server.register(fastifyCors)
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-console.log(__dirname)
-server.register(fastifyStatic, { root: path.join(__dirname, 'public') })
 
 server.register(multer.contentParser)
 

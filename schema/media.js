@@ -1,4 +1,4 @@
-const getNewsSchema = {
+const getMediaSchema = {
     querystring: {
         limit: {
             type: 'number',
@@ -21,7 +21,7 @@ const getNewsSchema = {
     }
 }
 
-const getNewsByIdSchema = {
+const getMediaByIdSchema = {
     params: {
         id: {
             type: 'number',
@@ -31,33 +31,34 @@ const getNewsByIdSchema = {
     }
 }
 
-const postNewsSchema = {
+const postMediaSchema = {
     body: {
+        type: 'object',
         properties: {
-            title: {
+            link: {
                 type: 'string',
                 minLength: 1,
                 maxLength: 255,
                 errorMessage: {
-                    type: 'Title invalid',
-                    minLength: 'Judul harus diisi',
-                    maxLength: 'Maksimal karakter judul adalah 255'
+                    type: 'Media invalid',
+                    minLength: 'Media harus diisi',
+                    maxLength: 'Maksimal karakter media adalah 255'
                 }
             },
-            content: {
+            description: {
                 type: 'string',
                 minLength: 1,
                 errorMessage: {
-                    type: 'Content invalid',
-                    minLength: 'Konten harus diisi'
+                    type: 'Deskripsi invalid',
+                    minLength: 'Deskripsi harus diisi'
                 }
             }
         },
-        required: ['title', 'content']
+        required: ['link', 'description']
     }
 }
 
-const updateNewsSchema = {
+const updateMediaSchema = {
     params: {
         id: {
             type: 'number',
@@ -66,31 +67,31 @@ const updateNewsSchema = {
         }
     },
     body: {
+        type: 'object',
         properties: {
-            title: {
+            link: {
                 type: 'string',
                 minLength: 1,
                 maxLength: 255,
                 errorMessage: {
-                    type: 'Title invalid',
+                    type: 'Link invalid',
                     minLength: 'Judul harus diisi',
                     maxLength: 'Maksimal karakter judul adalah 255'
                 }
             },
-            content: {
+            description: {
                 type: 'string',
                 minLength: 1,
                 errorMessage: {
-                    type: 'Content invalid',
-                    minLength: 'Konten harus diisi'
+                    type: 'Deskripsi invalid',
+                    minLength: 'Deskripsi harus diisi'
                 }
             }
-        },
-        required: ['title', 'content']
+        }
     }
 }
 
-const deleteNewsSchema = {
+const deleteMediaSchema = {
     params: {
         id: {
             type: 'number',
@@ -100,4 +101,4 @@ const deleteNewsSchema = {
     }
 }
 
-export { getNewsSchema, getNewsByIdSchema, postNewsSchema, updateNewsSchema, deleteNewsSchema }
+export { getMediaSchema, getMediaByIdSchema, postMediaSchema, updateMediaSchema, deleteMediaSchema }

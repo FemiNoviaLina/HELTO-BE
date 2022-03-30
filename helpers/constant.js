@@ -1,6 +1,6 @@
 export const statusCode = {
-    OK: { code: 200, constant: 'OK'},
-    CREATED: { code: 201, constant: 'CREATED' },
+    OK: { code: 200, constant: 'SUCCESS'},
+    CREATED: { code: 201, constant: 'SUCCESS' },
     BAD_REQUEST: { code: 400, constant: 'BAD_REQUEST' },
     UNAUTHORIZED: { code: 401, constant: 'UNAUTHORIZED' },
     FORBIDDEN: { code: 403, constant: 'FORBIDDEN' },
