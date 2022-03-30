@@ -97,11 +97,6 @@ const updateNews = async(req, res) => {
                 }, image: filename
             }
         })
-
-        if(news) {
-            await supabase.storage.from('helto-storage')
-                .remove('public/' + news.image)
-        }
     } catch (e) {
         if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
         if(e.code === 'P2025') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Berita tidak ditemukan'))
