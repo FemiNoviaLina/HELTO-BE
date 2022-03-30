@@ -6,6 +6,7 @@ import mediaRoute from './media.js'
 import threadRoute from './thread.js'
 import agendaRoute from './agenda.js'
 import tipsAndTrickRoute from './tips_trick.js'
+import userRoute from './user.js'
 
 export default async (fastify, opts) => {
     fastify.register(authRoute)
@@ -16,4 +17,5 @@ export default async (fastify, opts) => {
     fastify.register(threadRoute)
     fastify.register(agendaRoute)
     fastify.register(tipsAndTrickRoute)
+    fastify.register(userRoute)
 }
