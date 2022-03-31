@@ -272,4 +272,51 @@ const likePost = async (req, res) => {
     }
 }
 
-export { createPost, getPostById, getPostsByThreadKey, likePost }
+const getAllPost = async (req, res) => {
+    const take = req.query.limit ? parseInt(req.query.limit) : 10
+    const skip = req.query.offset ? parseInt(req.query.offset) : 0
+    const region = req.query.region ? req.query.region : ''
+
+    try {
+        const posts = await prisma.post.findMany({
+            where: {
+                OR: [{
+                    author: {
+                        region: {
+                            contains: region,
+                            mode: 'insensitive'
+                        }
+                    },
+                }, {
+                    content: {
+                        contains: region,
+                        mode: 'insensitive'
+                    }
+                }]
+            },
+            include: {
+                thread: {
+                    select: {
+                        id: true,
+                        key: true
+                    }
+                },
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        username: true,
+                        region: true
+                    }
+                }
+            }
+        })
+
+        if(posts.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Post tidak ditemukan'))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', posts))
+    } catch(e) {
+        return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
+    }
+}
+
+export { createPost, getPostById, getPostsByThreadKey, likePost, getAllPost }
