@@ -61,19 +61,20 @@ const getAgendaById = async (req, res) => {
 }
 
 const updateAgenda = async (req, res) => {
+    console.log(req.body)
     if(!req.user.isAdmin) {
         return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan mengakses resource ini'))
     }
 
     let agenda
     try {
-        agenda = prisma.agenda.update({
+        agenda = await prisma.agenda.update({
             where: {
                 id: req.params.id
             },
             data: {
                 name: req.body.name,
-                date: req.body.date ? toDate(req.body.date) : null
+                date: req.body.date ? toDate(req.body.date) : undefined
             }
         })
     } catch(e) {

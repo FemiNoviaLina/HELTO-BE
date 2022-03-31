@@ -97,25 +97,20 @@ const updateTipsAndTrick = async (req, res) => {
         return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan mengakses resource ini'))
     }
 
-    const { id } = req.params
-    const { title, content } = req.body
-    let filename
-    if(req.files['image']) {
-        const image = req.files['image'][0]
-        filename = 'image' + Date.now() + path.extname(image.originalname)
-        const { data, error } = await supabase.storage.from('helto-storage')
-            .upload('public/' + filename, image.buffer, { contentType: image.mimetype })
-
-        if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
-
-    }
-    
-    let data = { }
-    if(title) data.title = title
-    if(content) data.content = content
-    if(filename) data.image = filename
-
     try {
+        const { id } = req.params
+        const { title, content } = req.body
+        let filename
+        if(req.files['image']) {
+            const image = req.files['image'][0]
+            filename = 'image' + Date.now() + path.extname(image.originalname)
+            const { data, error } = await supabase.storage.from('helto-storage')
+                .upload('public/' + filename, image.buffer, { contentType: image.mimetype })
+
+            if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
+
+        }
+
         const tipsTrick = await prisma.tipsTrick.update({
             where: {
                 id
