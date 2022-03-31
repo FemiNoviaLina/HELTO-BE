@@ -51,11 +51,13 @@ const getTipsAndTrick = async (req, res) => {
             where: {
                 OR: [{
                     content: {
-                        contains: keyword
+                        contains: keyword ? keyword : "",
+                        mode: 'insensitive'
                     },
                 }, {
                     title: {
-                        contains: keyword
+                        contains: keyword ? keyword : "",
+                        mode: 'insensitive'
                     },
                 }]
             }

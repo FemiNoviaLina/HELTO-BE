@@ -3,6 +3,7 @@ import { statusCode } from "../helpers/constant.js"
 import { prisma } from '../index.js'
 import path from 'path'
 import { supabase } from "../index.js"
+import console from "console"
 
 
 const getNews = async(req, res) => {
@@ -80,19 +81,26 @@ const updateNews = async(req, res) => {
     }
 
     const { title, content } = req.body
-    const id = req.params.id
     const author = req.user.id
-    const image = req.files['image'][0]
-    const filename = 'image' + Date.now() + path.extname(image.originalname)
-
-    const { data, error } = await supabase.storage.from('helto-storage')
-        .upload('public/' + filename, image.buffer, { contentType: image.mimetype })
-
-    if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
 
     let news
 
     try {
+        let filename
+        console.log(req)
+        if(req.file) {
+            console.log(req)
+            const image = req.file
+            const filename = 'image' + Date.now() + path.extname(image.originalname)
+
+            const { data, error } = await supabase.storage.from('helto-storage')
+                .upload('public/' + filename, image.buffer, { contentType: image.mimetype })
+
+            if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
+        }
+        
+        console.log(filename)
+
         news = await prisma.news.update({
             where: {
                 id: req.params.id
@@ -105,7 +113,10 @@ const updateNews = async(req, res) => {
                 }, image: filename
             }
         })
+
+        console.log(news)
     } catch (e) {
+        console.log(e)
         if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
         if(e.code === 'P2025') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Berita tidak ditemukan'))
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))

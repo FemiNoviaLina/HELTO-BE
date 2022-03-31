@@ -2,12 +2,6 @@ import { responseBody } from '../helpers/base_response.js';
 import { prisma } from '../index.js'
 import { statusCode } from '../helpers/constant.js'
 
-// id, content, authorId, replyToId, threadId, createdAt, UpdatedAt
-
-// Buat post, post ini akan di-attach ke thread yang di-create oleh user
-
-// path /post/:key
-// body { content, replyToId }
 const createPost = async (req, res) => {
     const user = await prisma.user.findUnique({
         where: {
@@ -70,8 +64,6 @@ const createPost = async (req, res) => {
     }
 }
 
-// Get post by id
-// get /post/:key/:id
 const getPostById = async (req, res) => {
     const user = await prisma.user.findUnique({
         where: {
@@ -146,8 +138,6 @@ const getPostById = async (req, res) => {
     }
 }
 
-// Get posts by thread key
-// get /posts/:key?region=:region&limit=:limit&offset=:offset
 const getPostsByThreadKey = async (req, res) => {
 
     const take = req.query.limit ? parseInt(req.query.limit) : 10
@@ -175,11 +165,19 @@ const getPostsByThreadKey = async (req, res) => {
         const posts = await prisma.post.findMany({
             where: {
                 threadId: user.thread.id,
-                author: {
-                    region: {
-                        contains: region
+                OR: [{
+                    author: {
+                        region: {
+                            contains: region,
+                            mode: 'insensitive'
+                        }
+                    },
+                }, {
+                    content: {
+                        contains: region,
+                        mode: 'insensitive'
                     }
-                }
+                }]
             }, 
             include: {
                 thread: {
@@ -199,14 +197,14 @@ const getPostsByThreadKey = async (req, res) => {
             }
         })
 
+        if(posts.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Post tidak ditemukan'))
+
         return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', posts))
     } catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
 }
 
-// Like post
-// post /post/:key/:id/like
 const likePost = async (req, res) => {
     const user = await prisma.user.findUnique({
         where: {

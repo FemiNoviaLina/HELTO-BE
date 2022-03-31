@@ -9,19 +9,22 @@ export const getUser = async (req, res) => {
         const user = await prisma.user.findUnique({
             where: {
                 id: req.params.id
+            }, 
+            select: {
+                id: true,
+                username: true, 
+                name: true,
+                email: true,
+                phone: true,
+                region: true,
+                isAdmin: true
             }
         })
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'User berhasil ditampilkan', { user: {
-             id: user.id,
-             username: user.username,
-             email: user.email,
-             name: user.name, 
-             phone: user.phone,
-             region: user.region 
-            }
-        }))
+
+        if(!user) res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, "User tidak ditemukan"))
+
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'User berhasil ditampilkan', user))
     } catch (e) {
-        if(e.message === 'Cannot read properties of null (reading \'id\')') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'User tidak ditemukan'))
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
 }

@@ -15,7 +15,7 @@ export default async (fastify, opts) => {
 const privateNewsRoute = async fastify => {
     fastify.put('/news/:id', {
         preHandler: fastify.auth([validateToken]),
-        preValidation: upload.fields([{ name: 'image', maxCount: 1 }]),
+        preValidation: upload.single('image'),
         schema: updateNewsSchema,
         handler: updateNews
     })

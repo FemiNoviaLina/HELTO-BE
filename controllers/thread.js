@@ -58,36 +58,6 @@ const getThreadKey = async (req, res) => {
     } 
     
     return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
-
-    // try {
-    //     thread = await prisma.thread.upsert({
-    //         where: {
-    //             memberCounts: {
-    //                 lt: 5
-    //             }
-    //         }, 
-    //         update: {
-    //             memberCounts: {
-    //                 increment: 1
-    //             }
-    //         },
-    //         create: {
-    //             key: getKey(),
-    //             memberCounts: 1
-    //         }
-    //     })
-    
-    //     await prisma.user.update({
-    //         where: {
-    //             id: req.user.id
-    //         }, data: {
-    //             key: thread.key
-    //         }
-    //     })
-    // } catch(e) {
-    //     return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
-    // } 
-    // return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
 }
 
 const enrollKey = async(req, res) => {

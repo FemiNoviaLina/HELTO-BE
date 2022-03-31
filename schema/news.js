@@ -85,8 +85,7 @@ const updateNewsSchema = {
                     minLength: 'Konten harus diisi'
                 }
             }
-        },
-        required: ['title', 'content']
+        }
     }
 }
 
