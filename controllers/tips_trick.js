@@ -100,7 +100,7 @@ const updateTipsAndTrick = async (req, res) => {
     try {
         const { id } = req.params
         const { title, content } = req.body
-        let filename
+        let filename, oldImage
         if(req.files['image']) {
             const image = req.files['image'][0]
             filename = 'image' + Date.now() + path.extname(image.originalname)
@@ -109,14 +109,32 @@ const updateTipsAndTrick = async (req, res) => {
 
             if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
 
+            oldImage = await prisma.tipsTrick.findUnique({
+                where: {
+                    id
+                }, 
+                select: {
+                    image: true
+                }
+            })
         }
 
         const tipsTrick = await prisma.tipsTrick.update({
             where: {
                 id
             },
-            data
+            data: {
+                title, content, image: filename ? filename : undefined
+            }
         })
+
+        if(oldImage) {
+            const { data, error } = await supabase.storage.from('helto-storage')
+                .remove(['public/' + oldImage.image])
+
+            console.log(error)
+            if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
+        }
 
         if(!tipsTrick) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and tricks tidak ditemukan'))
         
@@ -139,18 +157,30 @@ const deleteTipsAndTrick = async (req, res) => {
     let tipsTrick
 
     try {
+        const oldImage = await prisma.tipsTrick.findUnique({
+            where: {
+                id
+            }, 
+            select: {
+                image: true
+            }
+        })
+
+        console.log(oldImage)
+
         tipsTrick = await prisma.tipsTrick.delete({
             where: {
                 id
             }
         })
 
-        if(tipsTrick) {
+        if(oldImage) {
             await supabase.storage.from('helto-storage')
-                .remove(tipsTrick.image)
+                .remove(['public/' + oldImage.image])
         }
     }
     catch (e) {
+        console.log(e)
         if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
         if(e.code === 'P2025') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and trick tidak ditemukan'))
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
