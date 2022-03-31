@@ -1,13 +1,13 @@
 import { postTipsAndTrick, getTipsAndTrick, getTipsAndTrickById, updateTipsAndTrick, deleteTipsAndTrick } from '../controllers/tips_trick.js'
 import fastifyAuth from 'fastify-auth'
 import { validateToken } from '../middlewares/validate_token.js'
-import { postTipsAndTrickSchema, updateTipsAndTrickSchema, deleteTipsAndTrickSchema, getTipsAndTrickSchema } from '../schema/tips_trick.js'
+import { postTipsAndTrickSchema, updateTipsAndTrickSchema, deleteTipsAndTrickSchema, getTipsAndTrickSchema, getTipsAndTrickByIdSchema } from '../schema/tips_trick.js'
 import { upload } from "../index.js"
 
 export default async (fastify, opts) => {
-    fastify.get('/tips-and-trick', getTipsAndTrick)
+    fastify.get('/tips-and-trick', { schema: getTipsAndTrickSchema }, getTipsAndTrick)
 
-    fastify.get('/tips-and-trick/:id', { schema: getTipsAndTrickSchema }, getTipsAndTrickById)
+    fastify.get('/tips-and-trick/:id', { schema: getTipsAndTrickByIdSchema }, getTipsAndTrickById)
 
     fastify.register(fastifyAuth).after(() => privateTipsAndTrickRoute(fastify))
 }

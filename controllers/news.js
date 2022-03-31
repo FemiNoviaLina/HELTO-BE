@@ -31,6 +31,14 @@ const getNewsById = async(req, res) => {
     const news = await prisma.news.findUnique({
         where: {
             id: req.params.id
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
         }
     })
 
@@ -87,9 +95,8 @@ const updateNews = async(req, res) => {
 
     try {
         let filename
-        console.log(req)
         if(req.file) {
-            console.log(req)
+            console.log(req.file)
             const image = req.file
             const filename = 'image' + Date.now() + path.extname(image.originalname)
 
