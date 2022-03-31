@@ -52,12 +52,11 @@ model Post {
   likesCount Int      @default(0)
   thread     Thread   @relation(fields: [threadId], references: [id])
   threadId   Int
-  createtAt  DateTime @default(now())
+  createdAt  DateTime @default(now())
   UpdatedAt  DateTime @updatedAt
 }
 
 model PostLikes {
-  id         Int      
   post       Post     @relation(fields: [postId], references: [id])
   postId     Int      
   user       User     @relation(fields: [userId], references: [id])

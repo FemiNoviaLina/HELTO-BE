@@ -10,7 +10,15 @@ const getNews = async(req, res) => {
     const take = req.query.limit ? parseInt(req.query.limit) : 10
 
     const news = await prisma.news.findMany({
-        orderBy: { createdAt: "desc"}, skip, take
+        orderBy: { createdAt: "desc"}, skip, take,
+        include: { 
+            author: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
     })
 
     if(news.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada berita untuk ditampilkan'))

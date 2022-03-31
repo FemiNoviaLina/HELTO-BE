@@ -66,7 +66,7 @@ const deleteTipsAndTrickSchema = {
     }
 }
 
-const getTipsAndTrickSchema = {
+const getTipsAndTrickByIdSchema = {
     params: {
         id: {
             type: 'number',
@@ -76,4 +76,18 @@ const getTipsAndTrickSchema = {
     }
 }
 
-export { postTipsAndTrickSchema, updateTipsAndTrickSchema, deleteTipsAndTrickSchema, getTipsAndTrickSchema }
+const getTipsAndTrickSchema = {
+    querystring: {
+        keyword: {
+            type: 'string'
+        },
+        limit: {
+            type: 'number'
+        },
+        offset: {
+            type: 'number'
+        }
+    }
+}
+
+export { postTipsAndTrickSchema, updateTipsAndTrickSchema, deleteTipsAndTrickSchema, getTipsAndTrickByIdSchema, getTipsAndTrickSchema }

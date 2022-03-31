@@ -37,6 +37,7 @@ const postTipsAndTrick = async (req, res) => {
 const getTipsAndTrick = async (req, res) => {
     const skip = req.query.offset ? parseInt(req.query.offset) : 0
     const take = req.query.limit ? parseInt(req.query.limit) : 10
+    const keyword = req.query.keyword
 
     let tipsTrick
 
@@ -45,7 +46,18 @@ const getTipsAndTrick = async (req, res) => {
             skip,
             take,
             orderBy: {
-                createdAt: 'desc'
+                createdAt: 'desc',
+            },
+            where: {
+                OR: [{
+                    content: {
+                        contains: keyword
+                    },
+                }, {
+                    title: {
+                        contains: keyword
+                    },
+                }]
             }
         })
 
