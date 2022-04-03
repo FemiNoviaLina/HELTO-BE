@@ -12,11 +12,19 @@ const getThreadKey = async (req, res) => {
 
     if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
     if(user.joined) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'User sudah bergabung ke sebuah thread'))
-    if(user.key) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'User sudah memiliki enroll key'))
     
-    let thread
-
     try {
+        let thread
+        if(user.threadId) {
+            thread = await prisma.thread.findUnique({
+                where: {
+                    id: user.threadId
+                }
+            })
+
+            return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
+        }
+
         thread = await prisma.thread.findFirst({
             where: {
                 memberCounts: {
@@ -53,11 +61,11 @@ const getThreadKey = async (req, res) => {
                 threadId: thread.id
             }
         })
+
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
     } catch(e) {
             return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     } 
-    
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
 }
 
 const enrollKey = async(req, res) => {

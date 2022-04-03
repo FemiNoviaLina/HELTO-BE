@@ -71,7 +71,6 @@ const createPost = async (req, res) => {
     }
 }
 
-// cari user => cek key, if !community => check key, set threadId, 
 const getPostById = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
