@@ -24,7 +24,7 @@ const getMediaById = async (req, res) => {
 
     if(!media) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Media tidak ditemukan'))
 
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Media berhasil ditampilkan', { news }))
+    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Media berhasil ditampilkan', { media }))
 }
 
 const postMedia = async (req, res) => {
