@@ -210,6 +210,19 @@ const getPostsByThreadKey = async (req, res) => {
                             username: true,
                             region: true
                         }
+                    },
+                    likes: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                }
+                            }
+                        }, 
+                        where: {
+                            userId: req.user.id
+                        }
                     }
                 }
             }),
