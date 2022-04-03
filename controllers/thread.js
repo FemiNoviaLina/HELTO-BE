@@ -76,7 +76,7 @@ const enrollKey = async(req, res) => {
     })
 
     if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
-    if(!user.id) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'User belum memiliki enroll key'))
+    if(!user.threadId) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'User belum memiliki enroll key'))
     if(user.joined) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'User sudah bergabung ke sebuah thread'))
 
     const thread = await prisma.thread.findUnique({
@@ -88,18 +88,27 @@ const enrollKey = async(req, res) => {
     if(thread.key != req.params.key) return res.status(statusCode.BAD_REQUEST.code).send(responseBody(statusCode.BAD_REQUEST.constant, 'Enroll key tidak sesuai'))
 
     try {
-        await prisma.user.update({
+        const thread = await prisma.user.update({
             where: {
                 id: req.user.id
             }, 
             data: {
                 joined: true
+            }, 
+            select: {
+                thread: {
+                    select: {
+                        id: true,
+                        key: true
+                    }
+                }
             }
+
         })
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Enrollment berhasil', thread))
     } catch(e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     } 
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Enrollment berhasil'))
 }
 
 export { getThreadKey, enrollKey }
