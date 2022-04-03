@@ -1,5 +1,5 @@
-import { createPostSchema, getPostByIdSchema, getPostSchema, likePostSchema, getAllPostSchema } from '../schema/post.js'
-import { createPost, getPostById, getPostsByThreadKey, likePost, getAllPost } from '../controllers/post.js'
+import { createPostSchema, getPostByIdSchema, getPostSchema, likePostSchema } from '../schema/post.js'
+import { createPost, getPostById, getPostsByThreadKey, likePost } from '../controllers/post.js'
 import fastifyAuth from 'fastify-auth'
 import { validateToken } from '../middlewares/validate_token.js'
 
@@ -30,11 +30,5 @@ const privatePostRoute = async fastify => {
         preHandler: fastify.auth([validateToken]),
         schema: likePostSchema,
         handler: likePost
-    })
-
-    fastify.get('/post', {
-        preHandler: fastify.auth([validateToken]),
-        schema: getAllPostSchema,
-        handler: getAllPost
     })
 }

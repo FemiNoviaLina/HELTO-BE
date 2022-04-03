@@ -84,25 +84,4 @@ const likePostSchema = {
     }
 }
 
-const getAllPostSchema = {
-    querystring: {
-        limit: {
-            type: 'number',
-            minimum: 1,
-            maximum: 100,
-            errorMessage: 'Limit invalid'
-        },
-        offset: {
-            type: 'number',
-            minimum: 0,
-            errorMessage: 'Offset invalid'
-        },
-        region: {
-            type: 'string',
-            minLength: 1,
-            errorMessage: 'Region invalid'
-        }
-    }
-}
-
-export { createPostSchema, getPostByIdSchema, getPostSchema, likePostSchema, getAllPostSchema }
+export { createPostSchema, getPostByIdSchema, getPostSchema, likePostSchema }

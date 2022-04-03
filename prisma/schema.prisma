@@ -40,20 +40,20 @@ model Thread {
 }
 
 model Post {
-  id         Int      @id @default(autoincrement())
-  content    String   @db.Text
-  author     User     @relation(fields: [authorId], references: [id])
+  id         Int        @id @default(autoincrement())
+  content    String     @db.Text
+  author     User       @relation(fields: [authorId], references: [id])
   authorId   Int      
-  replyTo    Post?    @relation("ReplyToRelation", fields: [replyToId], references: [id])
+  replyTo    Post?      @relation("ReplyToRelation", fields: [replyToId], references: [id])
   replyToId  Int?
-  repliedBy  Post[]   @relation("ReplyToRelation")
-  replyCount Int      @default(0)
+  repliedBy  Post[]     @relation("ReplyToRelation")
+  replyCount Int        @default(0)
   likes      PostLikes[]
-  likesCount Int      @default(0)
-  thread     Thread   @relation(fields: [threadId], references: [id])
-  threadId   Int
-  createdAt  DateTime @default(now())
-  UpdatedAt  DateTime @updatedAt
+  likesCount Int        @default(0)
+  thread     Thread?    @relation(fields: [threadId], references: [id])
+  threadId   Int?
+  createdAt  DateTime   @default(now())
+  UpdatedAt  DateTime   @updatedAt
 }
 
 model PostLikes {
