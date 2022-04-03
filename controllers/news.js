@@ -24,7 +24,7 @@ const getNews = async(req, res) => {
             }]
         }
 
-        const [ news, totalNews ] = await prisma.$transaction([
+        const [ news, totalData ] = await prisma.$transaction([
             prisma.news.findMany({
                 orderBy: { createdAt: "desc"}, skip, take,
                 where,
@@ -42,7 +42,7 @@ const getNews = async(req, res) => {
     
         if(news.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada berita untuk ditampilkan'))
     
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Berita berhasil ditampilkan', { news, totalNews }))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Berita berhasil ditampilkan', { news, totalData }))
     } catch(e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
     }

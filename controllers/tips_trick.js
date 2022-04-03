@@ -53,7 +53,7 @@ const getTipsAndTrick = async (req, res) => {
                 },
             }]
         }
-        const [ tipsAndTrick, totaltipsAndTrick ] = await prisma.$transaction([
+        const [ tipsAndTrick, totalData ] = await prisma.$transaction([
             prisma.tipsTrick.findMany({
                 skip,
                 take,
@@ -69,7 +69,7 @@ const getTipsAndTrick = async (req, res) => {
 
         if(tipsAndTrick.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and tricks tidak ditemukan'))
 
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Tips and tricks berhasil didapat', { tipsAndTrick, totaltipsAndTrick }))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Tips and tricks berhasil didapat', { tipsAndTrick, totalData }))
     } catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }

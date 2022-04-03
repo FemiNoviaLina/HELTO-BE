@@ -20,13 +20,13 @@ const createPost = async (req, res) => {
 
         if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
         
-        if(req.params.key !== 'community') {
+        if(req.params.key != 'community') {
             if(user.thread.key !== req.params.key) return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan untuk mengakses thread ini'))
         }
 
         const content = req.body.content
         const replyToId = req.body.replyToId ? req.body.replyToId : null
-        const threadId = req.params.key !== 'community' ? user.thread.id : null
+        const threadId = req.params.key != 'community' ? user.thread.id : null
         const authorId = user.id
 
         console.log(threadId)
@@ -90,7 +90,6 @@ const getPostById = async (req, res) => {
 
         if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
         
-        console.log(req.params.key !== 'community')
         if(req.params.key != 'community') {
             if(user.thread.key !== req.params.key) return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan untuk mengakses thread ini'))
         }
@@ -172,11 +171,11 @@ const getPostsByThreadKey = async (req, res) => {
 
         if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
         
-        if(req.params.key !== 'community') {
+        if(req.params.key != 'community') {
             if(user.thread.key !== req.params.key) return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan untuk mengakses thread ini'))
         }
 
-        const threadId = req.params.key !== 'community' ? user.thread.id : null
+        const threadId = req.params.key != 'community' ? user.thread.id : null
         const where = {
             threadId,
             OR: [{
@@ -194,7 +193,7 @@ const getPostsByThreadKey = async (req, res) => {
             }]
         }
 
-        const [ posts, totalPosts ] = await prisma.$transaction([
+        const [ posts, totalData ] = await prisma.$transaction([
             prisma.post.findMany({
                 where, skip, take,
                 include: {
@@ -219,7 +218,7 @@ const getPostsByThreadKey = async (req, res) => {
 
         if(posts.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Post tidak ditemukan'))
 
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', { posts, totalPosts }))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', { posts, totalData }))
     } catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
@@ -243,7 +242,7 @@ const likePost = async (req, res) => {
 
         if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
         
-        if(req.params.key !== 'community') {
+        if(req.params.key != 'community') {
             if(user.thread.key !== req.params.key) return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan untuk mengakses thread ini'))
         }
 
