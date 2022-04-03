@@ -53,14 +53,17 @@ const updateMedia = async (req, res) => {
         return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan mengakses resource ini'))
     }
 
-    let media
+    const description = req.body.description
+    const link = req.body.link
 
     try {
-        media = prisma.media.update({
+        await prisma.media.update({
             where: {
                 id: req.params.id
             },
-            data: req.body
+            data: {
+                description, link
+            }
         }) 
     } catch(e) {
         if(e.code === 'P2025') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Berita tidak ditemukan'))
@@ -76,10 +79,8 @@ const deleteMedia = async (req, res) => {
         return res.status(statusCode.FORBIDDEN.code).send(errorResponseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan mengakses resource ini'))
     }
 
-    let media
-
     try {
-        media = await prisma.media.delete({
+        await prisma.media.delete({
             where: {
                 id: req.params.id
             }
