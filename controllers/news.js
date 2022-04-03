@@ -7,9 +7,23 @@ import { supabase } from "../index.js"
 const getNews = async(req, res) => {
     const skip = req.query.offset ? parseInt(req.query.offset) : 0
     const take = req.query.limit ? parseInt(req.query.limit) : 10
+    const keyword = req.query.keyword
 
     const news = await prisma.news.findMany({
         orderBy: { createdAt: "desc"}, skip, take,
+        where: {
+            OR: [{
+                content: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }, {
+                title: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }]
+        },
         include: { 
             author: {
                 select: {
