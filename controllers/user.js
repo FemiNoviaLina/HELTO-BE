@@ -18,6 +18,7 @@ export const getUser = async (req, res) => {
                 phone: true,
                 region: true,
                 isAdmin: true,
+                joined: true,
                 thread: {
                     select: {
                         id: true,

@@ -135,7 +135,6 @@ const updateTipsAndTrick = async (req, res) => {
             const { data, error } = await supabase.storage.from('helto-storage')
                 .remove(['public/' + oldImage.image])
 
-            console.log(error)
             if(error) return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat menghubungi storage'))
         }
 
@@ -169,8 +168,6 @@ const deleteTipsAndTrick = async (req, res) => {
             }
         })
 
-        console.log(oldImage)
-
         tipsTrick = await prisma.tipsTrick.delete({
             where: {
                 id
@@ -183,7 +180,6 @@ const deleteTipsAndTrick = async (req, res) => {
         }
     }
     catch (e) {
-        console.log(e)
         if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
         if(e.code === 'P2025') return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and trick tidak ditemukan'))
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))

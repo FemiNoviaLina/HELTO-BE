@@ -64,7 +64,7 @@ const getThreadKey = async (req, res) => {
 
         return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Key berhasil didapat', thread.key))
     } catch(e) {
-            return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
+        return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     } 
 }
 

@@ -12,7 +12,6 @@ export const postFeedback = async (req, res) => {
             }
         })
     } catch (e) {  
-        console.log(e)
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
 

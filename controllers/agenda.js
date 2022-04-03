@@ -66,7 +66,6 @@ const getAgendaById = async (req, res) => {
 }
 
 const updateAgenda = async (req, res) => {
-    console.log(req.body)
     if(!req.user.isAdmin) {
         return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan mengakses resource ini'))
     }

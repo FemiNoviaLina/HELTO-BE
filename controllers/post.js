@@ -29,8 +29,6 @@ const createPost = async (req, res) => {
         const threadId = req.params.key != 'community' ? user.thread.id : null
         const authorId = user.id
 
-        console.log(threadId)
-
         const post = await prisma.post.create({
             data: {
                 content, replyToId, 
@@ -195,7 +193,9 @@ const getPostsByThreadKey = async (req, res) => {
 
         const [ posts, totalData ] = await prisma.$transaction([
             prisma.post.findMany({
-                where, skip, take,
+                where, skip, take, orderBy: {
+                    createdAt: 'desc'
+                },
                 include: {
                     thread: {
                         select: {
