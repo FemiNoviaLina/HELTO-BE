@@ -178,6 +178,7 @@ const getPostsByThreadKey = async (req, res) => {
         const threadId = req.params.key != 'community' ? user.thread.id : null
         const where = {
             threadId,
+            replyToId: null,
             OR: [{
                 author: {
                     region: {
