@@ -90,7 +90,8 @@ const getPostById = async (req, res) => {
 
         if(!user) return res.status(statusCode.UNAUTHORIZED.code).send(responseBody(statusCode.UNAUTHORIZED.constant, 'User tidak ditemukan'))
         
-        if(req.params.key !== 'community') {
+        console.log(req.params.key !== 'community')
+        if(req.params.key != 'community') {
             if(user.thread.key !== req.params.key) return res.status(statusCode.FORBIDDEN.code).send(responseBody(statusCode.FORBIDDEN.constant, 'User tidak diizinkan untuk mengakses thread ini'))
         }
         
@@ -176,45 +177,49 @@ const getPostsByThreadKey = async (req, res) => {
         }
 
         const threadId = req.params.key !== 'community' ? user.thread.id : null
-
-        const posts = await prisma.post.findMany({
-            where: {
-                threadId,
-                OR: [{
-                    author: {
-                        region: {
-                            contains: region,
-                            mode: 'insensitive'
-                        }
-                    },
-                }, {
-                    content: {
+        const where = {
+            threadId,
+            OR: [{
+                author: {
+                    region: {
                         contains: region,
                         mode: 'insensitive'
                     }
-                }]
-            }, 
-            include: {
-                thread: {
-                    select: {
-                        id: true,
-                        key: true
-                    }
                 },
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        username: true,
-                        region: true
+            }, {
+                content: {
+                    contains: region,
+                    mode: 'insensitive'
+                }
+            }]
+        }
+
+        const [ posts, totalPosts ] = await prisma.$transaction([
+            prisma.post.findMany({
+                where, skip, take,
+                include: {
+                    thread: {
+                        select: {
+                            id: true,
+                            key: true
+                        }
+                    },
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            region: true
+                        }
                     }
                 }
-            }
-        })
+            }),
+            prisma.post.count({ where })
+        ])
 
         if(posts.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Post tidak ditemukan'))
 
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', posts))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Post berhasil ditemukan', { posts, totalPosts }))
     } catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }

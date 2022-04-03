@@ -6,13 +6,25 @@ const getMedia = async (req, res) => {
     const skip = req.query.offset ? parseInt(req.query.offset) : 0
     const take = req.query.limit ? parseInt(req.query.limit) : 10
 
-    const media = await prisma.media.findMany({
-        orderBy: { createdAt: "desc" }, skip, take
-    })
+    try {
+        const [ media, totalMedia ] = await prisma.$transaction([
+            prisma.media.findMany({
+                skip,
+                take,
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            }), 
+            prisma.media.count()
+        ])
 
-    if(media.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada media untuk ditampilkan'))
+        if(media.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada media untuk ditampilkan'))
 
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Media berhasil ditampilkan', { media }))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Media berhasil ditampilkan', { media, totalMedia }))
+    } catch(e) {
+        if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
+        return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
+    }
 }
 
 const getMediaById = async (req, res) => {

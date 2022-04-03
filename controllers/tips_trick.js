@@ -39,37 +39,40 @@ const getTipsAndTrick = async (req, res) => {
     const take = req.query.limit ? parseInt(req.query.limit) : 10
     const keyword = req.query.keyword
 
-    let tipsTrick
-
     try {
-        tipsTrick = await prisma.tipsTrick.findMany({
-            skip,
-            take,
-            orderBy: {
-                createdAt: 'desc',
-            },
-            where: {
-                OR: [{
-                    content: {
-                        contains: keyword ? keyword : "",
-                        mode: 'insensitive'
-                    },
-                }, {
-                    title: {
-                        contains: keyword ? keyword : "",
-                        mode: 'insensitive'
-                    },
-                }]
-            }
-        })
+        const where = {
+            OR: [{
+                content: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }, {
+                title: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }]
+        }
+        const [ tipsAndTrick, totaltipsAndTrick ] = await prisma.$transaction([
+            prisma.tipsTrick.findMany({
+                skip,
+                take,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                where
+            }), 
+            prisma.tipsTrick.count({
+                where
+            })
+        ])
 
+        if(tipsAndTrick.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and tricks tidak ditemukan'))
+
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Tips and tricks berhasil didapat', { tipsAndTrick, totaltipsAndTrick }))
     } catch (e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
-
-    if(tipsTrick.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tips and tricks tidak ditemukan'))
-
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Tips and tricks berhasil didapat', tipsTrick))
 }
 
 const getTipsAndTrickById = async (req, res) => {

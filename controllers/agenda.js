@@ -27,19 +27,24 @@ const getAgenda = async (req, res) => {
     const skip = req.query.offset ? parseInt(req.query.offset) : 0
     const take = req.query.limit ? parseInt(req.query.limit) : 10
 
-    let agenda
     try {
-        agenda = await prisma.agenda.findMany({
-            orderBy: { date: "desc" }, skip, take
-        })
+        const [ agenda, totalAgenda ] = await prisma.$transaction([
+            prisma.agenda.findMany({
+                skip,
+                take,
+                orderBy: {
+                    date: 'desc'
+                }
+            }), 
+            prisma.agenda.count()
+        ])
+        if(agenda.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada agenda untuk ditampilkan'))
+
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Agenda berhasil ditemukan', { agenda, totalAgenda }))
     } catch(e) {
         if(e.code === 'P1001') return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
-
-    if(agenda.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada agenda untuk ditampilkan'))
-
-    return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Agenda berhasil ditemukan', agenda))
 }
 
 const getAgendaById = async (req, res) => {

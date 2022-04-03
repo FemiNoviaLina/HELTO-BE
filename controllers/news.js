@@ -10,34 +10,39 @@ const getNews = async(req, res) => {
     const keyword = req.query.keyword
 
     try {
-        const news = await prisma.news.findMany({
-            orderBy: { createdAt: "desc"}, skip, take,
-            where: {
-                OR: [{
-                    content: {
-                        contains: keyword ? keyword : "",
-                        mode: 'insensitive'
-                    },
-                }, {
-                    title: {
-                        contains: keyword ? keyword : "",
-                        mode: 'insensitive'
-                    },
-                }]
-            },
-            include: { 
-                author: {
-                    select: {
-                        id: true,
-                        name: true
+        const where = {
+            OR: [{
+                content: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }, {
+                title: {
+                    contains: keyword ? keyword : "",
+                    mode: 'insensitive'
+                },
+            }]
+        }
+
+        const [ news, totalNews ] = await prisma.$transaction([
+            prisma.news.findMany({
+                orderBy: { createdAt: "desc"}, skip, take,
+                where,
+                include: { 
+                    author: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
                     }
                 }
-            }
-        })
+            }),
+            prisma.news.count({ where })
+        ])
     
         if(news.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada berita untuk ditampilkan'))
     
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Berita berhasil ditampilkan', { news }))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, 'Berita berhasil ditampilkan', { news, totalNews }))
     } catch(e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, 'Tidak dapat meraih database'))
     }
