@@ -17,7 +17,13 @@ export const getUser = async (req, res) => {
                 email: true,
                 phone: true,
                 region: true,
-                isAdmin: true
+                isAdmin: true,
+                thread: {
+                    select: {
+                        id: true,
+                        key: true
+                    }
+                }
             }
         })
 
