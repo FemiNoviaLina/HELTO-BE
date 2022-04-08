@@ -21,6 +21,13 @@ const postFeedback = async (req, res) => {
 const getFeedback = async (req, res) => {
     const skip = req.query.offset ? parseInt(req.query.offset) : 0
     const take = req.query.limit ? parseInt(req.query.limit) : 10
+    const keyword = req.query.keyword
+    const where = {
+        feedback: {
+            contains: keyword,
+            mode: 'insensitive'
+        }
+    }
 
     try {
         const [ feedback, totalData ] = await prisma.$transaction([
@@ -29,9 +36,10 @@ const getFeedback = async (req, res) => {
                 take,
                 orderBy: {
                     createdAt: 'desc'
-                }
+                }, 
+                where
             }), 
-            prisma.feedback.count()
+            prisma.feedback.count({ where })
         ])
 
         if(feedback.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada feedback ditemukan'))
