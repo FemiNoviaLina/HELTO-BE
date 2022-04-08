@@ -19,12 +19,24 @@ const postFeedback = async (req, res) => {
 }
 
 const getFeedback = async (req, res) => {
+    const skip = req.query.offset ? parseInt(req.query.offset) : 0
+    const take = req.query.limit ? parseInt(req.query.limit) : 10
+
     try {
-        const feedback = await prisma.feedback.findMany()
+        const [ feedback, totalData ] = await prisma.$transaction([
+            prisma.feedback.findMany({
+                skip,
+                take,
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            }), 
+            prisma.feedback.count()
+        ])
 
         if(feedback.length === 0) return res.status(statusCode.NOT_FOUND.code).send(responseBody(statusCode.NOT_FOUND.constant, 'Tidak ada feedback ditemukan'))
         
-        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, feedback))
+        return res.status(statusCode.OK.code).send(responseBody(statusCode.OK.constant, {feedback, totalData}))
     } catch(e) {
         return res.status(statusCode.INTERNAL_SERVER_ERROR.code).send(responseBody(statusCode.INTERNAL_SERVER_ERROR.constant, e.message))
     }
